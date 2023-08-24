@@ -1,5 +1,5 @@
 # openttd-ai-swarm
-An OpenTTD AI called Swarm
+An OpenTTD AI called Swarm - An AI with its main objective to dominate by connecting all towns by roads and buses, so people may connect more.
 
 Requires:
 * PathFinder.Road version 4, make sure you have that mod installed.
@@ -10,4 +10,3 @@ Installation:
 ```
 git pull https://github.com/nl-saw/openttd-ai-swarm
 ```
-
