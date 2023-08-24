@@ -8,5 +8,5 @@ Manual installation:
 
 * cmd to your OpenTTD\AI folder and clone this repo:
 ```
-git pull https://github.com/nl-saw/openttd-ai-swarm
+git clone https://github.com/nl-saw/openttd-ai-swarm
 ```
