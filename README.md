@@ -4,7 +4,7 @@ An OpenTTD AI called Swarm - An AI with its main objective to dominate by connec
 Requires:
 * PathFinder.Road version 4, make sure you have that mod installed.
 
-Installation:
+Manual installation:
 
 * cmd to your OpenTTD\AI folder and clone this repo:
 ```
