@@ -189,6 +189,9 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 							}
 							if (retries >=5) Error("Issue with vehicle in the way after 5 tries!"); return null;
 							break;
+						case AIError.ERR_LAND_SLOPED_WRONG:
+							Error("Issue with land sloped the wrong way!"); return null;
+							break;
 						case AIError.ERR_AREA_NOT_CLEAR:
 							if (!AIRoad.IsRoadTile(path.GetTile())) {
 								Warning("Road was blocked and will now have to demolish something. [1]");
