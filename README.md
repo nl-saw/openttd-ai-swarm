@@ -12,4 +12,5 @@ git clone https://github.com/nl-saw/openttd-ai-swarm
 ```
 
 Screenshot of the minimap after AI has completed:
+
 ![Screenshot of the minimap after AI has completed](https://raw.githubusercontent.com/nl-saw/openttd-ai-swarm/main/Map_ScreenShot.png)
