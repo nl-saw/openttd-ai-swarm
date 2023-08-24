@@ -7,6 +7,10 @@ Requires:
 
 Manual installation:
 
+Option 1:
+* download the release and place the openttd-ai-swarm folder from the archive into your OpenTTD\AI subfolder.
+
+Option 2:
 * cmd to your OpenTTD\AI folder and clone this repo:
 ```
 git clone https://github.com/nl-saw/openttd-ai-swarm
