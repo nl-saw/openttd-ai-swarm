@@ -3,6 +3,7 @@ An OpenTTD AI called Swarm - An AI with its main objective to dominate by connec
 
 Requires:
 * PathFinder.Road version 4, make sure you have that mod installed.
+* Highly recommended: increase your road vehicle limit to 5000 or higher on large maps with loads of towns.
 
 Manual installation:
 
@@ -10,6 +11,8 @@ Manual installation:
 ```
 git clone https://github.com/nl-saw/openttd-ai-swarm
 ```
+
+It is recommended to start with the default settings.
 
 Screenshot of the minimap after AI has completed:
 
