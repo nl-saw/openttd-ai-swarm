@@ -24,7 +24,7 @@ require("hive.nut");
 require("roadnetwork.nut");
 require("airnetwork.nut");
 
-B 		<- Hive;
+B		<- Hive;
 Info	<- Logsystem.Info;
 Warning <- Logsystem.Warning;
 Error	<- Logsystem.Error;
@@ -90,8 +90,9 @@ function Swarm::Start()
 	AIController.Sleep(max(1, 100 - (AIController.GetTick() - start_tick)));
 
 	// Airlines if enabled and possible - Start with 2 Airports and an Aircraft
-	if(AIController.GetSetting("use_planes") && !AIGameSettings.IsDisabledVehicleType(AIVehicle.VT_AIR) && AIGameSettings.GetValue("vehicle.max_aircraft") > 0) {
-		// The lazy approach:
+	if(AIController.GetSetting("use_planes") && !AIGameSettings.IsDisabledVehicleType(AIVehicle.VT_AIR) && AIGameSettings.GetValue("vehicle.max_aircraft") > 0)
+	{
+		// The lazy approach, for now
 		AirNet.ManageAir();	Sleep(1);
 		AirNet.ManageAir();	Sleep(1);
 		AirNet.ManageAir();
@@ -128,7 +129,7 @@ function Swarm::Start()
 		}
 
 		while(townlist_a.Count() == 0 || goal_reached)
-		{ 
+		{
 			Info("Okay I am Done :) Tried to connect all the towns now and/or hit (road) vehicle limit. Will idle from here on out. Thanks for having me!");
 			AIController.Sleep(56000);
 		}

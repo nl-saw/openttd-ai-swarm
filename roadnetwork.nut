@@ -33,7 +33,8 @@ function RoadNetwork::ConnectCluster(townid_a,townlist_a)
 	local townlist_b = B.Return_ClosestTowns_List(townid_a,townlist_a);
 
 	// Remove towns already serviced elsewhere when enabled
-	if(!AIController.GetSetting("reuse_towns")) {
+	if(!AIController.GetSetting("reuse_towns"))
+	{
 		townlist_b.RemoveList(this.towns_used_bus);
 	}
 
@@ -52,20 +53,22 @@ function RoadNetwork::ConnectCluster(townid_a,townlist_a)
 		Info("About to connect (A): " + AITown.GetName(townid_a) + " -> (B): " + AITown.GetName(townid_b));
 
 		// Build a road between the 2 Towns. Try a few times (if needed)
-		for (local a=0;a<road_build_attempts;a++) {
-
+		for (local a=0;a<road_build_attempts;a++)
+		{
 			Info("Pathbuilding.. Attempt: " + (a+1) + " / " + road_build_attempts);
 			builtroad = RoadNet.BuildRoad(townid_a,townid_b); this.Sleep(1); if (builtroad) break;
 			Info("Pathbuilding to " + AITown.GetName(townid_b) + " failed.");
-
 		}
 
-		// ROAD FAILURE
-		if(!builtroad) {
+		// ROAD BUILD FAILURE
+		if(!builtroad)
+		{
 			Warning("Pathbuilding to " + AITown.GetName(townid_b) + " failed! Skipping this connection for now.");
+		}
 
-		// ROAD SUCCESS
-		} else {
+		// ROAD BUILD SUCCESS
+		else
+		{
 			Info("Road between " + AITown.GetName(townid_a) + " and " + AITown.GetName(townid_b) + " done.");
 
 			// Build Depot, Bus Stops and fill the new route with buses
@@ -73,36 +76,41 @@ function RoadNetwork::ConnectCluster(townid_a,townlist_a)
 			local busstop_b = RoadNet.BuildBusStop(townid_b);
 			local bus_depot = RoadNet.BuildRVStation(townid_a,"depot");
 
-			if (busstop_a && busstop_b && bus_depot) {
+			if (busstop_a && busstop_b && bus_depot)
+			{
 				local stop_dist = AIMap.DistanceManhattan(busstop_a, busstop_b);
 				Info("Distance between busstops: " + stop_dist);
 
 				// Fill route and on success add this Town to used list
-				if (RoadNet.FillRoute(townid_a,townid_b,busstop_a,busstop_b,bus_depot)) {
+				if (RoadNet.FillRoute(townid_a,townid_b,busstop_a,busstop_b,bus_depot))
+				{
 					this.towns_used_bus.AddItem(townid_b, AITown.GetLocation(townid_b));
 				}
 			}
 		}
 		// Airlines if enabled and possible
-		if(AIController.GetSetting("use_planes") && !AIGameSettings.IsDisabledVehicleType(AIVehicle.VT_AIR) && AIGameSettings.GetValue("vehicle.max_aircraft") > 0) {
+		if(AIController.GetSetting("use_planes") && !AIGameSettings.IsDisabledVehicleType(AIVehicle.VT_AIR) && AIGameSettings.GetValue("vehicle.max_aircraft") > 0)
+		{
 			AirNet.ManageAir();
 		}
 	}
 }
 
-function RoadNetwork::BuildRoad(townid_a,townid_b) {
-/*
-cost.max_cost 			2000000000 	The maximum cost for a route.
-cost.tile 				100 The cost for a single tile.
-cost.no_existing_road 	40 	The cost that is added to _cost_tile if no road exists yet.
-cost.turn 				100 The cost that is added to _cost_tile if the direction changes.
-cost.slope 				200 The extra cost if a road tile is sloped.
-cost.bridge_per_tile 	150 The cost per tile of a new bridge, this is added to _cost_tile.
-cost.tunnel_per_tile 	120 The cost per tile of a new tunnel, this is added to _cost_tile.
-cost.coast 				20 	The extra cost for a coast tile.
-cost.max_bridge_length 	10 	The maximum length of a bridge that will be build. Note that all existing bridges will be explored, regardless of their length.
-cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. Note that all existing tunnels will be explored, regardless of their length. 
-*/
+function RoadNetwork::BuildRoad(townid_a,townid_b)
+{
+	/*
+	cost.max_cost 			2000000000 	The maximum cost for a route.
+	cost.tile 				100 The cost for a single tile.
+	cost.no_existing_road 	40 	The cost that is added to _cost_tile if no road exists yet.
+	cost.turn 				100 The cost that is added to _cost_tile if the direction changes.
+	cost.slope 				200 The extra cost if a road tile is sloped.
+	cost.bridge_per_tile 	150 The cost per tile of a new bridge, this is added to _cost_tile.
+	cost.tunnel_per_tile 	120 The cost per tile of a new tunnel, this is added to _cost_tile.
+	cost.coast 				20 	The extra cost for a coast tile.
+	cost.max_bridge_length 	10 	The maximum length of a bridge that will be build. Note that all existing bridges will be explored, regardless of their length.
+	cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. Note that all existing tunnels will be explored, regardless of their length.
+	*/
+
 	AIRoad.SetCurrentRoadType(AIRoad.ROADTYPE_ROAD);
 	local pathfinder = RoadPathFinder();
 	local tilecost = AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD);
@@ -116,9 +124,10 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 	pathfinder.cost.slope = 150;
 	pathfinder.cost.bridge_per_tile = 550;
 	pathfinder.cost.tunnel_per_tile = 350;
-	
+
 	// Have money for at least 100 tiles
-	while (!B.HasMoney(100 * tilecost)) {
+	while (!B.HasMoney(100 * tilecost))
+	{
 		Info("Waiting for some more money before building a new road [1]..");
 		AIController.Sleep(wait_for_money_time);
 	}
@@ -132,23 +141,29 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 	local path = false;
 	local iter = 0; local pathfind_highest_iter = 0;
 	local startdate = AIDate.GetCurrentDate();
-	while (path == false) {
+	while (path == false)
+	{
 		iter++;
 		path = pathfinder.FindPath(110);
 		this.Sleep(1);
-		if (iter >= RoadNetwork.pathfind_max_iter) {
+		if (iter >= RoadNetwork.pathfind_max_iter)
+		{
 			path = null;
 			Warning("Stopped Pathfinding at max iteration allowed #"+iter);
 			break;
 		}
 	}
-	if (path == null) {
+
+	if (path == null)
+	{
 		// No path was found
 		Warning("No path was found.");
 		return null;
-	}else{
+	}
+	else
+	{
 		/*
-		if (iter > pathfind_highest_iter) { 
+		if (iter > pathfind_highest_iter) {
 			pathfind_highest_iter = iter;
 			local currdate = AIDate.GetCurrentDate();
 			tookdays = currdate-startdate;
@@ -157,24 +172,31 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 		*/
 
 		// Make sure we still have enough money for at least 80 tiles
-		while (!B.HasMoney(80 * tilecost)) {
+		while (!B.HasMoney(80 * tilecost))
+		{
 			Info("Waiting for some more money before building a new road [2]..");
 			AIController.Sleep(wait_for_money_time);
 		}
 	}
 
 	/* If a path was found, build a road over it. */
-	while (path != null) {
+	while (path != null)
+	{
 		local par = path.GetParent();
-		if (par != null) {
+		if (par != null)
+		{
 			local last_node = path.GetTile();
-			if (AIMap.DistanceManhattan(path.GetTile(), par.GetTile()) == 1 ) {
-				if (!AIRoad.BuildRoad(path.GetTile(), par.GetTile())) {
-				/* An error occured while building a piece of road, handle it. 
+			if (AIMap.DistanceManhattan(path.GetTile(), par.GetTile()) == 1)
+			{
+				if (!AIRoad.BuildRoad(path.GetTile(), par.GetTile()))
+				{
+				/* An error occured while building a piece of road, handle it.
 				* Note that is can also be the case that the road was already build. */
-					switch (AIError.GetLastError()) {
+					switch (AIError.GetLastError())
+					{
 						case AIError.ERR_ALREADY_BUILT:
 							break;
+
 						case AIError.ERR_NOT_ENOUGH_CASH:
 							Warning("Not enough money to finish the road. Waiting for more..");
 							while (!B.HasMoney(60 * tilecost))  {
@@ -182,6 +204,7 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 							}
 							if (!AIRoad.BuildRoad(path.GetTile(), par.GetTile())) Error("Still no roadpiece? [1]"); return null;
 							break;
+
 						case AIError.ERR_VEHICLE_IN_THE_WAY:
 							local retries = 0
 							while (!AIRoad.BuildRoad(path.GetTile(), par.GetTile()) && retries >=5 ) {
@@ -189,38 +212,51 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 							}
 							if (retries >=5) Error("Issue with vehicle in the way after 5 tries!"); return null;
 							break;
+
 						case AIError.ERR_LAND_SLOPED_WRONG:
 							Error("Issue with land sloped the wrong way!"); return null;
 							break;
+
 						case AIError.ERR_AREA_NOT_CLEAR:
 							if (!AIRoad.IsRoadTile(path.GetTile())) {
 								Warning("Road was blocked and will now have to demolish something. [1]");
 								AITile.DemolishTile(path.GetTile());
 								AIController.Sleep(1);
 							}
+
 							/*while (!AIRoad.BuildRoad(path.GetTile(), par.GetTile())) {
 								Warning("Road was blocked and will now have to demolish something. [2]");
 								AITile.DemolishTile(path.GetTile());
 								AIController.Sleep(75);
 							}*/
+
 							if (!AIRoad.BuildRoad(path.GetTile(), par.GetTile())) Error("Issue after area was not clear! [1]"); return null;
 							break;
+
 						default:
 							Warning("Unhandled error while building road: " + AIError.GetLastErrorString() + ".");
 							continue;
 					}
 				}
-			} else {
+			}
+			else
+			{
 				/* Build a bridge or tunnel. */
-				if (!AIBridge.IsBridgeTile(path.GetTile()) && !AITunnel.IsTunnelTile(path.GetTile())) {
+				if (!AIBridge.IsBridgeTile(path.GetTile()) && !AITunnel.IsTunnelTile(path.GetTile()))
+				{
 					/* If it was a road tile, demolish it first. Do this to work around expended roadbits. */
 					if (AIRoad.IsRoadTile(path.GetTile())) AITile.DemolishTile(path.GetTile());
-					if (AITunnel.GetOtherTunnelEnd(path.GetTile()) == par.GetTile()) {
-						if (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile())) {
+
+					if (AITunnel.GetOtherTunnelEnd(path.GetTile()) == par.GetTile())
+					{
+						if (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile()))
+						{
 						/* An error occured while building a tunnel. TODO: handle it. */
-							switch (AIError.GetLastError()) {
+							switch (AIError.GetLastError())
+							{
 								case AIError.ERR_ALREADY_BUILT:
 									break;
+
 								case AIError.ERR_NOT_ENOUGH_CASH:
 									Warning("Not enough money to buy a tunnel. Waiting for more..");
 									while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < (50 * AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD))) {
@@ -228,27 +264,34 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 									}
 									if (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile())) Error("Still no tunnel! [1]"); return null;
 									break;
+
 								case AIError.ERR_VEHICLE_IN_THE_WAY:
 									while (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile())) {
 										AIController.Sleep(50);
 									}
 									if (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile())) Error("Still no tunnel! [2]"); return null;
 									break;
+
 								default:
 									Warning("Unhandled error while building tunnel: " + AIError.GetLastErrorString() + ".");
 									continue;
 							}
 
 						}
-					} else {
+					}
+					else
+					{
 						local bridge_list = AIBridgeList_Length(AIMap.DistanceManhattan(path.GetTile(), par.GetTile()) + 1);
 						bridge_list.Valuate(AIBridge.GetMaxSpeed);
 						bridge_list.Sort(AIList.SORT_BY_VALUE, AIList.SORT_ASCENDING); // Slowest bridge FTW :D
-						if (!AIBridge.BuildBridge(AIVehicle.VT_ROAD, bridge_list.Begin(), path.GetTile(), par.GetTile())) {
-						/* An error occured while building a bridge. TODO: handle it. */
-							switch (AIError.GetLastError()) {
+						if (!AIBridge.BuildBridge(AIVehicle.VT_ROAD, bridge_list.Begin(), path.GetTile(), par.GetTile()))
+						{
+							/* An error occured while building a bridge. TODO: handle it. */
+							switch (AIError.GetLastError())
+							{
 								case AIError.ERR_ALREADY_BUILT:
 									break;
+
 								case AIError.ERR_NOT_ENOUGH_CASH:
 									Warning("Not enough money to buy a bridge. Waiting for more..");
 									while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < (200 * AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD))) {
@@ -256,12 +299,14 @@ cost.max_tunnel_length 	20 	The maximum length of a tunnel that will be build. N
 									}
 									if (!AIBridge.BuildBridge(AIVehicle.VT_ROAD, bridge_list.Begin(), path.GetTile(), par.GetTile())) Error("Still no bridge! [1]"); return null;
 									break;
+
 								case AIError.ERR_VEHICLE_IN_THE_WAY:
 									while (!AIBridge.BuildBridge(AIVehicle.VT_ROAD, bridge_list.Begin(), path.GetTile(), par.GetTile())) {
 										AIController.Sleep(50);
 									}
 									if (!AIBridge.BuildBridge(AIVehicle.VT_ROAD, bridge_list.Begin(), path.GetTile(), par.GetTile())) Error("Still no bridge! [2]"); return null;
 									break;
+
 								default:
 									Warning("Unhandled error while building bridge: " + AIError.GetLastErrorString() + ".");
 									continue;
@@ -311,28 +356,34 @@ function RoadNetwork::BuildBusStop(townid)
 		// Return a random tile from the remaining results (lazy attempt to avoid clustering in center)
 		area.Valuate(AIBase.RandItem);
 
-		if (area.Count()) {
-			for (local buildTile = area.Begin(); !area.IsEnd(); buildTile = area.Next()) {
+		if (area.Count())
+		{
+			for (local buildTile = area.Begin(); !area.IsEnd(); buildTile = area.Next())
+			{
 				local buildFront = RoadNetwork.GetRoadTile(buildTile);
-				if (buildFront) {
-					
+				if (buildFront)
+				{
 					// Build it
 					local buildStructure = AIRoad.BuildDriveThroughRoadStation(buildTile, buildFront, AIRoad.ROADVEHTYPE_BUS, AIStation.STATION_JOIN_ADJACENT);
-
-					if (!buildStructure) {
-						switch (AIError.GetLastError()) {
+					if (!buildStructure)
+					{
+						switch (AIError.GetLastError())
+						{
 							case AIError.ERR_NOT_ENOUGH_CASH:
 								Warning("Not enough money to build bus Stop. Waiting for more.");
-								while (!B.HasMoney(AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_BUS_STOP))) {
+								while (!B.HasMoney(AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_BUS_STOP)))
+								{
 									// if (!AIRoad.IsRoadTile(buildTile)) continue;
 									AIController.Sleep(wait_for_money_time);
 								}
 								if (!AIRoad.BuildDriveThroughRoadStation(buildTile, buildFront, AIRoad.ROADVEHTYPE_BUS, AIStation.STATION_JOIN_ADJACENT)) return null;
 								break;
+
 							case AIError.ERR_FLAT_LAND_REQUIRED:
 							case AIError.ERR_AREA_NOT_CLEAR:
 							case AIError.ERR_UNKNOWN:
 								continue;
+
 							default:
 								Warning("Unhandled ERR building bus Stop: " + AIError.GetLastErrorString() + ". Trying again");
 								continue;
@@ -340,7 +391,8 @@ function RoadNetwork::BuildBusStop(townid)
 					}
 
 					// Check if the build returned an actual valid station
-					if (AIStation.IsValidStation(AIStation.GetStationID(buildTile))) {
+					if (AIStation.IsValidStation(AIStation.GetStationID(buildTile)))
+					{
 						Info("Successfully built bus Stop in: " + AITown.GetName(townid));
 						Info("This stations Acceptance value: " + AITile.GetCargoAcceptance(buildTile,this.passenger_cargo_id, 1, 1, 3));
 
@@ -384,13 +436,15 @@ function RoadNetwork::BuildRVStation(townid, type)
 	if (type == "station") {
 		buildType = AIRoad.BT_BUS_STOP;
 	}
-	else if (type == "depot") {
+	else if (type == "depot")
+	{
 		buildType = AIRoad.BT_DEPOT;
 		Info("Checking for pre-built depots in " + AITown.GetName(townid));
 		local depotList = AIDepotList(AITile.TRANSPORT_ROAD);
 		depotList.Valuate(AITile.GetClosestTown);
 		depotList.KeepValue(townid);
-		if (!depotList.IsEmpty()) {
+		if (!depotList.IsEmpty())
+		{
 			Info("Depot in " + AITown.GetName(townid) + " found. Using it instead of building one");
 			local depotTile = depotList.Begin();
 			return depotTile;
@@ -401,16 +455,22 @@ function RoadNetwork::BuildRVStation(townid, type)
 	local area = AITileList();
 	local townLocation = AITown.GetLocation(townid);
 
-	while (range < 80) {
+	while (range < 80)
+	{
 		area.AddRectangle(townLocation - AIMap.GetTileIndex(range, range), townLocation + AIMap.GetTileIndex(range, range));
 		area.Valuate(AITile.IsBuildable);
 		area.KeepValue(1);
-		if (area.Count()) {
-			for (local buildTile = area.Begin(); !area.IsEnd(); buildTile = area.Next()) {
+		if (area.Count())
+		{
+			for (local buildTile = area.Begin(); !area.IsEnd(); buildTile = area.Next())
+			{
 				local buildFront = RoadNetwork.GetRoadTile(buildTile);
-				if (buildFront) {
-					if (!AIRoad.BuildRoad(buildTile, buildFront)) {
-						switch (AIError.GetLastError()) {
+				if (buildFront)
+				{
+					if (!AIRoad.BuildRoad(buildTile, buildFront))
+					{
+						switch (AIError.GetLastError())
+						{
 							case AIError.ERR_NOT_ENOUGH_CASH:
 								Warning("Not enough money to build road for bus " + type + ". Waiting for more");
 								while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD)) {
@@ -419,14 +479,17 @@ function RoadNetwork::BuildRVStation(townid, type)
 								}
 								if (!AIRoad.BuildRoad(buildTile, buildFront)) return null;
 								break;
+
 							case AIError.ERR_VEHICLE_IN_THE_WAY:
 								while (!AIRoad.BuildRoad(buildTile, buildFront)) {
 									if (!AITile.IsBuildable(buildTile)) continue;
 									AIController.Sleep(1000);
 								}
 								break;
+
 							case AIError.ERR_ALREADY_BUILT:
 								break;
+
 							case AIError.ERR_LAND_SLOPED_WRONG:
 							case AIError.ERR_AREA_NOT_CLEAR:
 							case AIRoad.ERR_ROAD_ONE_WAY_ROADS_CANNOT_HAVE_JUNCTIONS:
@@ -436,21 +499,27 @@ function RoadNetwork::BuildRVStation(townid, type)
 								continue;
 						}
 					}
+
 					local buildStructure = null;
 					if (type == "depot") buildStructure = AIRoad.BuildRoadDepot(buildTile, buildFront);
 					else if (type == "station") buildStructure = AIRoad.BuildRoadStation(buildTile, buildFront, AIRoad.ROADVEHTYPE_BUS, AIStation.STATION_JOIN_ADJACENT);
 					else return null;
 					if (!buildStructure) {
-						switch (AIError.GetLastError()) {
+						switch (AIError.GetLastError())
+						{
 							case AIError.ERR_NOT_ENOUGH_CASH:
 								Warning("Not enough money to build bus " + type + ". Waiting for more");
-								while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, buildType)) {
+								while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, buildType))
+								{
 									if (!AITile.IsBuildable(buildTile)) continue;
 									AIController.Sleep(wait_for_money_time);
 								}
-								if (type == "depot" && !AIRoad.BuildRoadDepot(buildTile, buildFront)) return null; 
+
+								if (type == "depot" && !AIRoad.BuildRoadDepot(buildTile, buildFront)) return null;
 								else if (type == "station" && !AIRoad.BuildRoadStation(buildTile, buildFront, AIRoad.ROADVEHTYPE_BUS, AIStation.STATION_JOIN_ADJACENT)) return null;
+
 								break;
+
 							case AIError.ERR_FLAT_LAND_REQUIRED:
 							case AIError.ERR_AREA_NOT_CLEAR:
 							default:
@@ -485,7 +554,8 @@ function RoadNetwork::FillRoute(towna,townb,stationa,stationb,depot)
 
 	// Wait for cash
 	local price = AIEngine.GetPrice(engine);
-	while (!B.HasMoney(price*1.04)) {
+	while (!B.HasMoney(price*1.04))
+	{
 		Info("Waiting for enough money for a bus..");
 		AIController.Sleep(wait_for_money_time);
 	}
@@ -504,7 +574,8 @@ function RoadNetwork::FillRoute(towna,townb,stationa,stationb,depot)
 	{
 		// Wait for cash
 		local price = AIEngine.GetPrice(engine);
-		while (!B.HasMoney(price*1.04)) {
+		while (!B.HasMoney(price*1.04))
+		{
 			Info("Waiting for enough money for a bus..");
 			AIController.Sleep(wait_for_money_time);
 		}
@@ -513,7 +584,8 @@ function RoadNetwork::FillRoute(towna,townb,stationa,stationb,depot)
 		AIVehicle.StartStopVehicle(clone_id);
 	}
 
-	if(AIVehicle.IsValidVehicle(vehicle_id)) {
+	if(AIVehicle.IsValidVehicle(vehicle_id))
+	{
 		Info("Bus(es) built in: "+AITown.GetName(towna)+", route now complete.");
 		return true;
 	}
@@ -551,7 +623,8 @@ function RoadNetwork::ImproveTownRating(townid, min_rating)
 
 	Info("Planting me some TREES around " + AITown.GetName(townid) + " to pump my ratings.");
 
-	for (local size = 3; size <= 20; size++) {
+	for (local size = 3; size <= 20; size++)
+	{
 
 		// Create up to a quite large (max 40 by 40 tiles) rectangle to cater for real big cities
 		local list = AITileList();
@@ -570,7 +643,8 @@ function RoadNetwork::ImproveTownRating(townid, min_rating)
 		//list.KeepValue(0);
 
 		// Plant trees on the applicable tiles
-		foreach (tile, dummy in list) {
+		foreach (tile, dummy in list)
+		{
 			AITile.PlantTree(tile);
 		}
 

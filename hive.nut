@@ -46,10 +46,10 @@ function Hive::ColourCompany()
 */
 	local company_colour1 = AICompany.COLOUR_BROWN;
 	local company_colour2 = AICompany.COLOUR_GREY;
-	
+
 	local vehicle_colour1 = AICompany.COLOUR_CREAM;
 	local vehicle_colour2 = AICompany.COLOUR_WHITE;
-	
+
 	if (!AICompany.SetPrimaryLiveryColour(AICompany.LS_DEFAULT, company_colour1)) {}
 	if (!AICompany.SetSecondaryLiveryColour(AICompany.LS_DEFAULT, company_colour2)) {}
 
@@ -122,7 +122,7 @@ function Hive::ManageLoan()
 			else {
 				Warning("Paid back: " + pay_back_total);
 			}
-		}	
+		}
 		Warning("Current Loan: " + AICompany.GetLoanAmount());
 	    lastloanaction = AIDate.GetCurrentDate();
 	}
