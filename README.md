@@ -21,3 +21,5 @@ It is recommended to start with the default settings.
 Screenshot of the minimap after AI has completed:
 
 ![Screenshot of the minimap after AI has completed](https://raw.githubusercontent.com/nl-saw/openttd-ai-swarm/main/Map_ScreenShot.png)
+
+PR's are always welcome!
