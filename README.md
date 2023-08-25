@@ -5,6 +5,8 @@ Requires:
 * PathFinder.Road version 4, make sure you have that mod installed.
 * Highly recommended: increase your road vehicle limit to 5000 - or higher on large maps with loads of towns.
 
+The AI can be obtained via the in-game content downloader: Swarm
+
 Manual installation:
 
 Option 1:
