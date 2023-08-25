@@ -171,7 +171,8 @@ function AirNetwork::ManageAir()
 		}
 
 		// Station does not have enough passengers waiting
-		else {
+		else
+		{
 			Info("Station Not "+max_pax_waiting+" :"+i);
 		}
 	}

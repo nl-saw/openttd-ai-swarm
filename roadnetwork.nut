@@ -199,7 +199,8 @@ function RoadNetwork::BuildRoad(townid_a,townid_b)
 
 						case AIError.ERR_NOT_ENOUGH_CASH:
 							Warning("Not enough money to finish the road. Waiting for more..");
-							while (!B.HasMoney(60 * tilecost))  {
+							while (!B.HasMoney(60 * tilecost))
+							{
 								AIController.Sleep(wait_for_money_time);
 							}
 							if (!AIRoad.BuildRoad(path.GetTile(), par.GetTile())) Error("Still no roadpiece? [1]"); return null;
@@ -207,7 +208,8 @@ function RoadNetwork::BuildRoad(townid_a,townid_b)
 
 						case AIError.ERR_VEHICLE_IN_THE_WAY:
 							local retries = 0
-							while (!AIRoad.BuildRoad(path.GetTile(), par.GetTile()) && retries >=5 ) {
+							while (!AIRoad.BuildRoad(path.GetTile(), par.GetTile()) && retries >=5 )
+							{
 								AIController.Sleep(75); retries++;
 							}
 							if (retries >=5) Error("Issue with vehicle in the way after 5 tries!"); return null;
@@ -218,13 +220,15 @@ function RoadNetwork::BuildRoad(townid_a,townid_b)
 							break;
 
 						case AIError.ERR_AREA_NOT_CLEAR:
-							if (!AIRoad.IsRoadTile(path.GetTile())) {
+							if (!AIRoad.IsRoadTile(path.GetTile()))
+							{
 								Warning("Road was blocked and will now have to demolish something. [1]");
 								AITile.DemolishTile(path.GetTile());
 								AIController.Sleep(1);
 							}
 
-							/*while (!AIRoad.BuildRoad(path.GetTile(), par.GetTile())) {
+							/*while (!AIRoad.BuildRoad(path.GetTile(), par.GetTile()))
+							{
 								Warning("Road was blocked and will now have to demolish something. [2]");
 								AITile.DemolishTile(path.GetTile());
 								AIController.Sleep(75);
@@ -259,14 +263,16 @@ function RoadNetwork::BuildRoad(townid_a,townid_b)
 
 								case AIError.ERR_NOT_ENOUGH_CASH:
 									Warning("Not enough money to buy a tunnel. Waiting for more..");
-									while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < (50 * AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD))) {
+									while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < (50 * AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD)))
+									{
 										AIController.Sleep(wait_for_money_time);
 									}
 									if (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile())) Error("Still no tunnel! [1]"); return null;
 									break;
 
 								case AIError.ERR_VEHICLE_IN_THE_WAY:
-									while (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile())) {
+									while (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile()))
+									{
 										AIController.Sleep(50);
 									}
 									if (!AITunnel.BuildTunnel(AIVehicle.VT_ROAD, path.GetTile())) Error("Still no tunnel! [2]"); return null;
@@ -294,7 +300,8 @@ function RoadNetwork::BuildRoad(townid_a,townid_b)
 
 								case AIError.ERR_NOT_ENOUGH_CASH:
 									Warning("Not enough money to buy a bridge. Waiting for more..");
-									while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < (200 * AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD))) {
+									while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < (200 * AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD)))
+									{
 										AIController.Sleep(wait_for_money_time);
 									}
 									if (!AIBridge.BuildBridge(AIVehicle.VT_ROAD, bridge_list.Begin(), path.GetTile(), par.GetTile())) Error("Still no bridge! [1]"); return null;
@@ -433,7 +440,8 @@ function RoadNetwork::BuildRVStation(townid, type)
 {
 	local buildType = null;
 	Info("Building bus " + type + " in " + AITown.GetName(townid));
-	if (type == "station") {
+	if (type == "station")
+	{
 		buildType = AIRoad.BT_BUS_STOP;
 	}
 	else if (type == "depot")
@@ -473,7 +481,8 @@ function RoadNetwork::BuildRVStation(townid, type)
 						{
 							case AIError.ERR_NOT_ENOUGH_CASH:
 								Warning("Not enough money to build road for bus " + type + ". Waiting for more");
-								while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD)) {
+								while (AICompany.GetBankBalance(AICompany.COMPANY_SELF) < AIRoad.GetBuildCost(AIRoad.ROADTYPE_ROAD, AIRoad.BT_ROAD))
+								{
 									if (!AITile.IsBuildable(buildTile)) continue;
 									AIController.Sleep(wait_for_money_time);
 								}
@@ -481,7 +490,8 @@ function RoadNetwork::BuildRVStation(townid, type)
 								break;
 
 							case AIError.ERR_VEHICLE_IN_THE_WAY:
-								while (!AIRoad.BuildRoad(buildTile, buildFront)) {
+								while (!AIRoad.BuildRoad(buildTile, buildFront))
+								{
 									if (!AITile.IsBuildable(buildTile)) continue;
 									AIController.Sleep(1000);
 								}
@@ -625,7 +635,6 @@ function RoadNetwork::ImproveTownRating(townid, min_rating)
 
 	for (local size = 3; size <= 20; size++)
 	{
-
 		// Create up to a quite large (max 40 by 40 tiles) rectangle to cater for real big cities
 		local list = AITileList();
 		list.AddRectangle(location - AIMap.GetTileIndex(size, size), location + AIMap.GetTileIndex(size, size));
