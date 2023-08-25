@@ -56,8 +56,10 @@ class Swarm extends AIController
 		this.towns_used_bus = AIList();
 
 		local list = AICargoList();
-		for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {
-			if (AICargo.HasCargoClass(i, AICargo.CC_PASSENGERS)) {
+		for (local i = list.Begin(); !list.IsEnd(); i = list.Next())
+		{
+			if (AICargo.HasCargoClass(i, AICargo.CC_PASSENGERS))
+			{
 				this.passenger_cargo_id = i;
 				break;
 			}
