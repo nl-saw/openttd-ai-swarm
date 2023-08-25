@@ -60,11 +60,13 @@ function AirNetwork::ManageAir()
 	aplist.AddList(airports);
 
 	// Go through and filter out stations that already have X or more aircraft assigned
-	for (local ap = airports.Begin(); !airports.IsEnd(); ap = airports.Next()) {
+	for (local ap = airports.Begin(); !airports.IsEnd(); ap = airports.Next())
+	{
 		if (AIVehicleList_Station(ap).Count() >= AirNetwork.airport_max_aircraft) aplist.RemoveItem(ap);
 	}
 
-	if (aplist.Count() < 1) {
+	if (aplist.Count() < 1)
+	{
 		Warning("We do not have any Airports servicable. Building new one.");
 		AirNetwork.BuildAirport(0);
 		return true;
@@ -80,8 +82,8 @@ function AirNetwork::ManageAir()
 		//Info("Assigned amount: "+assigned_to.Count());
 
 		// More than X amount of passengers waiting
-		if (pax_amount >= max_pax_waiting) {
-
+		if (pax_amount >= max_pax_waiting)
+		{
 			Info("Airport " + i + " (" + AIStation.GetLocation(i) + ") has enough passengers waiting, buying a new aircraft.");
 
 			// We only need one random aircraft to examine
@@ -91,7 +93,8 @@ function AirNetwork::ManageAir()
 			// Wait for enough money for the new aircraft
 			local engine = AirNetwork.SelectNewEngine();
 			local price = AIEngine.GetPrice(engine);
-			while (!B.HasMoney(price*1.02)) {
+			while (!B.HasMoney(price*1.02))
+			{
 				Info("Waiting for enough money ("+price+") for an aircraft..");
 				AIController.Sleep(wait_for_money_time);
 			}
@@ -99,23 +102,23 @@ function AirNetwork::ManageAir()
 			// Build it and order it to go from A -> B
 			local acraft_id = AIVehicle.BuildVehicle(hangar, engine);
 
-			if(AIVehicle.IsValidVehicle(acraft_id)) {
-
+			if(AIVehicle.IsValidVehicle(acraft_id))
+			{
 				AIOrder.AppendOrder(acraft_id, AIStation.GetLocation(i), AIOrder.OF_NONE); // A  OF_FULL_LOAD_ANY
 				i = aplist.Next(); // Skip the next airport iteration as it will also be served extra by the new aircraft
 				AIOrder.AppendOrder(acraft_id, AIStation.GetLocation(i), AIOrder.OF_NONE); // B
 
 				AIVehicle.StartStopVehicle(acraft_id);
 				Info("Aircraft built!");
-				
+
 				// Updating max Pax according to latest type aircraft
 				max_pax_waiting = AIEngine.GetCapacity(engine) * 2.5;
 			}
 		}
 
 		// Brand new station I assume. No passengers and no aircraft assigned
-		else if(pax_amount == 0 && AIVehicleList_Station(i).Count() == 0) {
-
+		else if(pax_amount == 0 && AIVehicleList_Station(i).Count() == 0)
+		{
 			Info("Station " + i + " (" + AIStation.GetLocation(i) + ") seems to be brand new. Looking for another new station.");
 
 			// Get a list of all airports, not having any passengers yet
@@ -126,9 +129,17 @@ function AirNetwork::ManageAir()
 			new_aps.KeepTop(6);
 
 			// Go through and filter out stations that already have aircraft assigned
-			for (local check_serviced = new_aps.Begin(); !new_aps.IsEnd(); check_serviced = new_aps.Next()) {
+			for (local check_serviced = new_aps.Begin(); !new_aps.IsEnd(); check_serviced = new_aps.Next())
+			{
 				if (AIVehicleList_Station(check_serviced).Count() > 0) new_aps.RemoveItem(check_serviced);
-			}if (new_aps.Count() == 0) { Warning("Did not find other new airport so building one."); AirNetwork.BuildAirport(i); return true; }
+			}
+
+			// No usable AP's found - build new one
+			if (new_aps.Count() == 0)
+			{
+				Warning("Did not find other new airport, so building one.");
+				AirNetwork.BuildAirport(i); return true;
+			}
 
 			Info("Found this many other empty and unserved stations: "+new_aps.Count()+". Going to use one of them.");
 			new_aps.Valuate(AIBase.RandItem);
@@ -141,16 +152,16 @@ function AirNetwork::ManageAir()
 			// Wait for enough money for the new aircraft
 			local engine = AirNetwork.SelectNewEngine();
 			local price = AIEngine.GetPrice(engine);
-			while (!B.HasMoney(price*1.02)) {
+			while (!B.HasMoney(price*1.02))
+			{
 				Info("Waiting for enough money ("+price+") for an aircraft..");
 				AIController.Sleep(wait_for_money_time);
 			}
 
 			// Build it
 			local clone_id = AIVehicle.BuildVehicle(hangar, engine);
-
-			if(AIVehicle.IsValidVehicle(clone_id)) {
-
+			if(AIVehicle.IsValidVehicle(clone_id))
+			{
 				AIOrder.AppendOrder(clone_id, AIStation.GetLocation(i), AIOrder.OF_NONE);
 				AIOrder.AppendOrder(clone_id, AIStation.GetLocation(dest_i), AIOrder.OF_NONE);
 				AIVehicle.StartStopVehicle(clone_id);
@@ -160,7 +171,8 @@ function AirNetwork::ManageAir()
 		}
 
 		// Station does not have enough passengers waiting
-		else {
+		else
+		{
 			Info("Station Not "+max_pax_waiting+" :"+i);
 		}
 	}
@@ -170,10 +182,12 @@ function AirNetwork::ManageAir()
 function AirNetwork::BuildAirport(location)
 {
 	local airport_type = AIAirport.AT_INVALID;
-		 if(AIAirport.IsValidAirportType(AIAirport.AT_INTERNATIONAL))	{ airport_type = AIAirport.AT_INTERNATIONAL; }
-	else if(AIAirport.IsValidAirportType(AIAirport.AT_LARGE)) 			{ airport_type = AIAirport.AT_LARGE; }
-	else if(AIAirport.IsValidAirportType(AIAirport.AT_SMALL)) 			{ airport_type = AIAirport.AT_SMALL; }
-	else { Error("Can not select a Valid Airport Type."); 				return null; }
+	if(AIAirport.IsValidAirportType(AIAirport.AT_INTERNATIONAL))	{ airport_type = AIAirport.AT_INTERNATIONAL; }
+	else if(AIAirport.IsValidAirportType(AIAirport.AT_LARGE)) 		{ airport_type = AIAirport.AT_LARGE; }
+	else if(AIAirport.IsValidAirportType(AIAirport.AT_SMALL)) 		{ airport_type = AIAirport.AT_SMALL; }
+	else { Error("Can not select a Valid Airport Type.");
+		return null;
+	}
 
 	local airport_x = AIAirport.GetAirportWidth(airport_type);
 	local airport_y = AIAirport.GetAirportHeight(airport_type);
@@ -188,7 +202,8 @@ function AirNetwork::BuildAirport(location)
 //	}
 
 	// Wait for enough money
-	while (!B.HasMoney(airport_cost*1.02)) {
+	while (!B.HasMoney(airport_cost*1.02))
+	{
 		Info("Waiting for enough money ("+airport_cost+") for an airport..");
 		AIController.Sleep(wait_for_money_time);
 	}
@@ -217,7 +232,8 @@ function AirNetwork::BuildAirport(location)
 				local test = AITestMode();
 				local good_tile = 0;
 
-				for (tile = list.Begin(); !list.IsEnd(); tile = list.Next()) {
+				for (tile = list.Begin(); !list.IsEnd(); tile = list.Next())
+				{
 					Sleep(1);
 					if (!AIAirport.BuildAirport(tile, airport_type, AIStation.STATION_NEW)) continue;
 					good_tile = tile;
@@ -228,11 +244,14 @@ function AirNetwork::BuildAirport(location)
 
 			Info("Placing an Airport near " + town_name);
 
-			if (AIAirport.BuildAirport(tile, airport_type, AIStation.STATION_NEW)) {
+			if (AIAirport.BuildAirport(tile, airport_type, AIStation.STATION_NEW))
+			{
 				Info("This airports Acceptance value: " + AITile.GetCargoAcceptance(tile,this.passenger_cargo_id, airport_x, airport_y, airport_rad));
 				this.towns_used_air.AddItem(town, tile);
 				return tile;
-			}else{
+			}
+			else
+			{
 				Warning("Could not place the airport: " + AIError.GetLastErrorString());
 			}
 		}
